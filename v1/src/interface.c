@@ -18,7 +18,7 @@ void print_menu() {
   // puts("              0. quit");
   puts("");
   puts("              1. sek'k'k'k'k'kby id");
-  puts("              2. add ";
+  puts("              2. add ");
   puts("              3. update");
   puts("              4. delete ");
   puts("              5. show all info ");
