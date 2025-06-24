@@ -1,9 +1,9 @@
 {
-  "database": {
-    "host": "database",
-    "user": "root",
-    "password": "mysqlpassword",
-    "database": "student_management"
-  },
-  "server_port": 8888
+    "database": {
+        "host": "database",
+        "user": "app_user",
+        "password": "app_password_456",
+        "database": "student_management"
+    },
+    "server_port": 8888
 }

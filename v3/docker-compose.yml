@@ -1,0 +1,48 @@
+services:
+  # 数据库服务 (官方 MySQL 8.0)
+  database:
+    image: mysql:8.0
+    container_name: student-database
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - student-network
+
+  # 后端服务
+  backend:
+    build: ./backend
+    container_name: student-backend
+    ports:
+      - "${BACKEND_PORT}:8888"
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - student-network
+
+# 网络配置
+networks:
+  student-network:
+    driver: bridge
+
+# 数据卷配置
+volumes:
+  db-data:
