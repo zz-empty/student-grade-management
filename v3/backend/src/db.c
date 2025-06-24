@@ -20,7 +20,7 @@ MYSQL *db_init(DBConfig config) {
   }
 
   // 设置字符集为UTF-8
-  if (mysql_set_character_set(conn, "utf8")) {
+  if (mysql_set_character_set(conn, "utf8mb4")) {
     fprintf(stderr, "Error setting charset: %s\n", mysql_error(conn));
   }
 
