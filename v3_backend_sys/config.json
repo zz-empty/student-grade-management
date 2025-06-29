@@ -1,0 +1,13 @@
+{
+  "server_port": 8888,
+  "debug_mode": true,
+  "log_file": "server_log",
+  "database": {
+    "host": "localhost",
+    "post": 3306,
+    "user": "v3mysql_usr",
+    "password": "v3mysql_usr_pwd",
+    "database": "student_grade_db",
+    "pool_size": 5
+  }
+}
