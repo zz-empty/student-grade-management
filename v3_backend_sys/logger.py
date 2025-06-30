@@ -16,7 +16,7 @@ class RequestLogger:
         # 控制台处理器（如果开启debug模式）
         if config.debug_mode:
             console_handler = logging.StreamHandler()
-            console_handler.setFormatter(logging.Formatter("%(asctime)s - %(massage)s"))
+            console_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
             self.logger.addHandler(console_handler)
 
     def log(self, client_ip, action, success, username=None, extra=""):
