@@ -52,6 +52,7 @@ class RequestHandler:
             # 4. 特殊处理登陆请求（不需要认证）
             if action == "login":
                 self._handle_login(request)
+                continue
 
             # 5. 检查认证状态
             if not self.authenticated:

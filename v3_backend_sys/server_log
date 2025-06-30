@@ -1,3 +1,16 @@
 2025-06-29 21:57:47,321 - START - SUCCESS - SERVER - Port: 8888
 2025-06-30 16:08:09,435 - START - SUCCESS - SERVER - Port: 8888
 2025-06-30 16:14:29,544 - START - SUCCESS - SERVER - Port: 8888
+2025-06-30 21:44:58,165 - START - SUCCESS - SERVER - Port: 8888
+2025-06-30 21:48:53,712 - login by admin - FAILED - 127.0.0.1 - execute_query
+2025-06-30 21:48:53,712 - login - FAILED - 127.0.0.1 - Authenticated required
+2025-06-30 21:48:53,725 - login by teacher1 - FAILED - 127.0.0.1 - execute_query
+2025-06-30 21:48:53,725 - login - FAILED - 127.0.0.1 - Authenticated required
+2025-06-30 21:48:53,738 - login by student1 - FAILED - 127.0.0.1 - execute_query
+2025-06-30 21:48:53,738 - login - FAILED - 127.0.0.1 - Authenticated required
+2025-06-30 21:48:53,751 - login by student2 - FAILED - 127.0.0.1 - execute_query
+2025-06-30 21:48:53,752 - login - FAILED - 127.0.0.1 - Authenticated required
+2025-06-30 21:48:53,765 - login by admin - FAILED - 127.0.0.1 - execute_query
+2025-06-30 21:48:53,765 - login - FAILED - 127.0.0.1 - Authenticated required
+2025-06-30 21:48:53,779 - login by nonexist_user - FAILED - 127.0.0.1 - execute_query
+2025-06-30 21:48:53,779 - login - FAILED - 127.0.0.1 - Authenticated required
