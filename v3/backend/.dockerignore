@@ -1,6 +1,0 @@
-# 忽略所有对象文件和可执行文件
-*.o
-backend_server
-
-# 忽略 macOS 特定文件
-.DS_Store
