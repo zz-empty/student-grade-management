@@ -18,4 +18,4 @@
 **/__pycache__/
 
 # 忽略日志文件
-**/server_log/
+**/server_log
