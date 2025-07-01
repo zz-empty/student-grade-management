@@ -11,7 +11,7 @@ class CustomLogger:
 
         # 设置日志格式
         formatter = logging.Formatter(
-            "%(asctime)s - [%(levelname)s] - %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
+            "%(asctime)s -[%(levelname)s]  -%(message)s", datefmt="%Y-%m-%d %H:%M:%S"
         )
 
         # 文件处理器
@@ -28,9 +28,9 @@ class CustomLogger:
     def log_request(self, client_ip, action, success, additional_info=""):
         """记录客户端请求日志"""
         status = "SUCCESS" if success else "FAIL"
-        message = f"IP:{client_ip} - ACTION: {action} - STATUS: {success}"
+        message = f"IP:{client_ip}  -ACTION:{action}   -STATUS:{success}"
         if additional_info:
-            message += f" - INFO: {additional_info}"
+            message += f"  \t-INFO=({additional_info})"
         self.logger.info(message)
 
     def log_error(self, error_message):

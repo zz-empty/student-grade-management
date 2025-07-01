@@ -366,12 +366,3 @@ if __name__ == "__main__":
         print(students)
     else:
         print(f"查询学生失败: {msg}")
-
-    print()
-    # 测试获取统计信息
-    success, msg, stats = student_manager.get_statistics()
-    if success:
-        print("统计信息:")
-        print(stats)
-    else:
-        print(f"查询失败: {msg}")
