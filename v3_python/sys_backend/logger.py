@@ -28,7 +28,7 @@ class CustomLogger:
     def log_request(self, client_ip, action, success, additional_info=""):
         """记录客户端请求日志"""
         status = "SUCCESS" if success else "FAIL"
-        message = f"IP:{client_ip}  -ACTION:{action}   -STATUS:{success}"
+        message = f"IP:{client_ip}  -ACTION:{action}\t-STATUS:{success}"
         if additional_info:
             message += f"  \t-INFO=({additional_info})"
         self.logger.info(message)
