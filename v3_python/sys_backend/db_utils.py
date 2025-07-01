@@ -1,11 +1,12 @@
+from hmac import new
 import mysql.connector
 from mysql.connector import pooling
 import hashlib
 import os
-import configparser
+import secrets
 
 
-class DatabaseManager:
+class BaseDBManager:
     def __init__(self, db_config):
         self.pool = self._create_pool(db_config)
 
@@ -37,7 +38,7 @@ class DatabaseManager:
     @staticmethod
     def generate_salt():
         """生成安全的随机盐值"""
-        return os.urandom(16).hex()
+        return secrets.token_hex(16)
 
     @staticmethod
     def hash_password(password, salt):
@@ -45,6 +46,8 @@ class DatabaseManager:
         salted_password = password.encode() + salt.encode()
         return hashlib.sha256(salted_password).hexdigest()
 
+
+class AccountManager(BaseDBManager):
     def verify_user(self, username, password):
         """验证用户凭证"""
         conn = None
@@ -124,6 +127,187 @@ class DatabaseManager:
             if conn and conn.is_connected():
                 conn.close()
 
+    def change_password(self, username, old_password, new_password):
+        """修改用户密码"""
+        # 先验证旧密码
+        user_info, msg = self.verify_user(username, old_password)
+        if not user_info:
+            return False, msg
+
+        conn = None
+        cursor = None
+
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+
+            # 生成新的盐值和哈希密码
+            new_salt = self.generate_salt()
+            new_hashed_pwd = self.hash_password(new_password, new_salt)
+
+            # 更新密码和盐值
+            update_query = """
+                UPDATE accounts
+                SET password = %s, salt = %s
+                WHERE username = %s
+            """
+            cursor.execute(update_query, (new_hashed_pwd, new_salt, username))
+            conn.commit()
+
+            return True, "密码修改成功"
+
+        except mysql.connector.Error as err:
+            if conn and conn.is_connected():
+                conn.rollback()
+            return False, f"数据库错误: {err}"
+        finally:
+            if cursor:
+                cursor.close()
+            if conn and conn.is_connected():
+                conn.close()
+
+    def list_accounts(self):
+        """获取账户列表（仅限管理员使用）"""
+        conn = None
+        cursor = None
+
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+
+            query = "SELECT username, permission created_at FROM accounts"
+            cursor.execute(query)
+            accounts = cursor.fetchall()
+
+            return True, "查询成功", accounts
+
+        except mysql.connector.Error as err:
+            return False, f"数据库错误: {err}", None
+        finally:
+            if cursor:
+                cursor.close()
+            if conn and conn.is_connected():
+                conn.close()
+
+    def update_permission(self, username, new_permission):
+        """更新账户权限（仅限管理员使用）"""
+        conn = None
+        cursor = None
+
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+
+            update_query = """
+                UPDATE accounts
+                SET permission = %s
+                WHERE username = %s 
+            """
+            cursor.execute(update_query, (new_permission, username))
+            conn.commit()
+
+            if cursor.rowcount == 0:
+                return False, "用户不存在"
+
+            return True, "权限修改成功"
+
+        except mysql.connector.Error as err:
+            if conn and conn.is_connected():
+                conn.rollback()
+            return False, f"数据库错误: {err}"
+        finally:
+            if cursor:
+                cursor.close()
+            if conn and conn.is_connected():
+                conn.close()
+
+    def delete_accout(self, username):
+        """删除用户（仅限管理员使用）"""
+        conn = None
+        cursor = None
+
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+
+            delete_query = "DELETE FROM accounts WHERE username = %s"
+            cursor.execute(delete_query, (username,))
+            conn.commit()
+
+            if cursor.rowconunt == 0:
+                return False, "用户不存在"
+
+            return True, "账户删除成功"
+
+        except mysql.connector.Error as err:
+            if conn and conn.is_connected():
+                conn.rollback()
+            return False, f"数据库错误: {err}"
+        finally:
+            if cursor:
+                cursor.close()
+            if conn and conn.is_connected():
+                conn.close()
+
+
+class StudentManager(BaseDBManager):
+    def query_students(self):
+        """查询所有学生成绩（按总分降序排序）"""
+        conn = None
+        cursor = None
+
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+
+            query = """
+            SELECT student_id, name, gender, score1, score2, score3,
+                   (score1 + score2 + score3) AS total
+            FROM scores
+            ORDER BY total DESC
+            """
+            cursor.execute(query)
+            students = cursor.fetchall()
+
+            return True, "查询成功", students
+
+        except mysql.connector.Error as err:
+            return False, f"数据库错误: {err}", None
+        finally:
+            if cursor:
+                cursor.close()
+            if conn and conn.is_connected():
+                conn.close()
+
+    def get_statistics(self):
+        """得到各科统计信息（平均分，最高分）"""
+        conn = None
+        cursor = None
+
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+
+            query = """
+            SELECT 
+                AVG(score1) AS avg1, MAX(score1) AS max1,
+                AVG(score2) AS avg2, MAX(score2) AS max2,
+                AVG(score3) AS avg3, MAX(score3) AS max3
+            FROM scores
+            """
+            cursor.execute(query)
+            stats = cursor.fetchall()
+
+            return True, "统计成功", stats
+
+        except mysql.connector.Error as err:
+            return False, f"数据库错误: {err}", None
+        finally:
+            if cursor:
+                cursor.close()
+            if conn and conn.is_connected():
+                conn.close()
+
 
 # 测试代码
 if __name__ == "__main__":
@@ -137,31 +321,57 @@ if __name__ == "__main__":
         "pool_size": 2,
     }
 
-    try:
-        db_manager = DatabaseManager(test_config)
+    # 测试账户管理
+    account_manager = AccountManager(test_config)
 
-        # 测试注册和验证
-        username = "test_user3"
-        password = "secure_password123"
+    # 测试学生管理
+    student_manager = StudentManager(test_config)
 
-        # 注册测试用户
-        reg_success, reg_msg = db_manager.register_user(username, password)
-        print(f"注册结果: {reg_success} , 消息: {reg_msg}")
+    # 测试修改密码
+    # 先注册一个测试账户
+    """
+    account_manager.register_user("test_user99", "password99")
+    success, msg = account_manager.change_password(
+        "test_user99", "password99", "password999"
+    )
+    print(f"修改密码: {success}, {msg}")
+    """
 
-        # 验证测试用户
-        if reg_success:
-            user_data, auth_msg = db_manager.verify_user(username, password)
-            print(f"验证结果: {auth_msg}")
-            if user_data:
-                print(f"用户信息: {user_data}")
+    # 测试验证用户登陆
+    """
+    user_info, msg = account_manager.verify_user("test_user", "password999")
+    if user_info:
+        print(f"测试结果: {user_info['username']}, {user_info['permission']}, {msg}")
+    else:
+        print(f"测试结果: {msg}")
+    """
 
-        # 测试错误密码
-        _, auth_msg = db_manager.verify_user(username, "wrong_password")
-        print(f"错误密码测试: {auth_msg}")
+    # 测试管理员的查看用户列表
+    user_info, msg = account_manager.verify_user("admin", "admin123")
+    if user_info:
+        print(f"测试结果: {user_info['username']}, {user_info['permission']}, {msg}")
+    else:
+        print(f"测试结果: {msg}")
+    success, msg, data = account_manager.list_accounts()
+    if success:
+        print("用户列表:")
+        print(data)
+    else:
+        print(msg)
 
-        # 测试不存在的用户
-        _, auth_msg = db_manager.verify_user("non_existent_user", "any_password")
-        print(f"不存在的用户测试: {auth_msg}")
+    # 测试查询成绩表
+    success, msg, students = student_manager.query_students()
+    if success:
+        print("查询学生")
+        print(students)
+    else:
+        print(f"查询学生失败: {msg}")
 
-    except Exception as e:
-        print(f"数据库管理器初始化失败: {str(e)}")
+    print()
+    # 测试获取统计信息
+    success, msg, stats = student_manager.get_statistics()
+    if success:
+        print("统计信息:")
+        print(stats)
+    else:
+        print(f"查询失败: {msg}")
