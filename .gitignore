@@ -16,3 +16,6 @@
 
 # 忽略python创建的编译文件
 **/__pycache__/
+
+# 忽略日志文件
+**/server_log/
