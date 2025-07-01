@@ -7,13 +7,13 @@ export LANG=C.UTF-8
 # 容器配置
 CONTAINER_NAME="v3mysql"
 NETWORK_NAME="net-v3"
-INIT_SCRIPT="${HOME}/workSpace/student-grade-management/v3/database/init.sql"
+INIT_SCRIPT="./init.sql"
 VOLUME_NAME="v3_mysql_data"
 
 # 用户配置
 MYSQL_ROOT_PASSWORD="v3mysql"
-MYSQL_USER="v3mysql_usr"
-MYSQL_USER_PASSWORD="v3mysql_usr_pwd"
+MYSQL_USER="v3mysql_user"
+MYSQL_USER_PASSWORD="v3mysql_user_pwd"
 MYSQL_DATABASE="student_grade_db"
 
 # 检查并删除同名容器

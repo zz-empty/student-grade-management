@@ -1,0 +1,4 @@
+2025-07-01 09:44:12 - [INFO] - IP:192.168.1.100 - ACTION: LOGIN - STATUS: True - INFO: User:admin
+2025-07-01 09:44:12 - [INFO] - IP:192.168.130.127 - ACTION: LOGIN - STATUS: False - INFO: Permission denied
+2025-07-01 09:44:12 - [INFO] - Server starting...
+2025-07-01 09:44:12 - [ERROR] - Database connect failed

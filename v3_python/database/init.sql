@@ -1,3 +1,19 @@
+-- 设置字符集为 UTF-8
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+SET character_set_connection = utf8mb4;
+SET character_set_database = utf8mb4;
+SET character_set_results = utf8mb4;
+SET character_set_server = utf8mb4;
+
+
+-- 创建专属数据库
+CREATE DATABASE IF NOT EXISTS student_grade_db
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
+
+USE student_grade_db;
+
 -- 创建学生成绩表
 CREATE TABLE scores (
     student_id VARCHAR(20) PRIMARY KEY,
@@ -14,6 +30,7 @@ CREATE TABLE scores (
 CREATE TABLE accounts (
     username VARCHAR(50) PRIMARY KEY,
     password VARCHAR(100) NOT NULL,
+    salt VARCHAR(50) NOT NULL,  -- 新增盐值字段
     permission ENUM('admin','user') NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -32,15 +49,13 @@ INSERT INTO scores (student_id, name, gender, score1, score2, score3) VALUES
 ('S010', '杨玉环', '女', 85, 90, 87);
 
 -- 插入账户数据（密码使用SHA-256加密）
-INSERT INTO accounts (username, password, permission) VALUES
-('admin', SHA2('admin123', 256), 'admin'),
-('teacher1', SHA2('teacher123', 256), 'admin'),
-('student1', SHA2('student123', 256), 'user'),
-('student2', SHA2('password', 256), 'user');
+INSERT INTO accounts (username, password, salt, permission) VALUES
+-- ('admin', SHA2('admin123', 256), 'admin');
+('admin', SHA2(CONCAT('admin123', 'd7f8a1b2c3d4e5f6'), 256), 'd7f8a1b2c3d4e5f6', 'admin');
 
 -- 创建视图：学生总分排名
 CREATE VIEW student_rankings AS
-SELECT 
+SELECT
     student_id,
     name,
     gender,
