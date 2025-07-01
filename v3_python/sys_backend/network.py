@@ -2,7 +2,7 @@ import socket
 import threading
 import json
 import time
-from config import Config, config
+from config import Config
 from logger import CustomLogger
 from db_utils import DatabaseManager
 import secrets

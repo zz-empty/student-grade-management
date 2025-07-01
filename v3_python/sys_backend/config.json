@@ -4,9 +4,9 @@
   "session_timeout": 1800,
   "database": {
     "host": "localhost",
-    "post": 3306,
-    "user": "v3mysql_usr",
-    "password": "v3mysql_usr_pwd",
+    "port": 3306,
+    "user": "v3mysql_user",
+    "password": "v3mysql_user_pwd",
     "database": "student_grade_db",
     "pool_size": 5
   }
