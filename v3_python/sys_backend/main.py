@@ -1,5 +1,4 @@
 import signal
-import time
 import sys
 from config import Config
 from logger import CustomLogger
