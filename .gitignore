@@ -19,7 +19,7 @@
 
 # 忽略日志文件
 **/server_log
-**/log/
+**/logs/
 
 # python虚拟环境
 **/.venv/
