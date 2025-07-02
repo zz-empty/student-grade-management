@@ -11,8 +11,12 @@ class GradeServerApp:
         # 加载配置
         self.config = Config()
 
-        # 初始化日志
-        self.logger = CustomLogger(self.config.log_file)
+        # 初始化日志（使用新的轮转配置）
+        self.logger = CustomLogger(
+            self.config.log_file,
+            max_bytes=self.config.log_max_bytes,
+            backup_count=self.config.log_backup_count,
+        )
 
         # 初始化数据库管理器
         self.account_manager = AccountManager(self.config.database_config)
@@ -38,6 +42,9 @@ class GradeServerApp:
         self.logger.log_info("启动学生成绩管理系统服务器")
         self.logger.log_info(f"服务器端口: {self.config.server_port}")
         self.logger.log_info(f"会话超时: {self.config.session_timeout}秒")
+        self.logger.log_info(
+            f"日志配置: 最大{self.config.log_max_bytes // 1024}KB, 保留{self.config.log_backup_count}个备份"
+        )
 
         try:
             self.server.start()
