@@ -490,8 +490,8 @@ class GradeServer:
 
         except Exception as e:
             self.logger.log_error(f"服务器启动失败: {str(e)}")
-        finally:
-            self.stop()
+        # finally:
+        # self.stop()
 
     def stop(self):
         """停止服务器"""
