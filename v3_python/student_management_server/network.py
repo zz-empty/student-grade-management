@@ -296,7 +296,7 @@ class ClientHandler:
             )
             conn.commit()
 
-            self.send_response(200, "添加学生成功")
+            self.send_response(201, "添加学生成功")
 
         except mysql.connector.Error as err:
             if conn and conn.is_connected():
