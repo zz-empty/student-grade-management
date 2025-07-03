@@ -116,11 +116,21 @@ class ClientHandler:
         """生成安全的会话令牌"""
         return secrets.token_urlsafe(32)
 
-    def send_response(self, status_code, message, data=None):
+    def send_response(self, status_code, message, data=None, include_token=False):
         """发送标准响应到客户端"""
-        response = {"status": status_code, "message": message, "data": data}
+        response = {"status": status_code, "message": message}
 
-        if self.session_token:
+        if data is not None:
+            response["data"] = data
+
+        # 仅在登录响应中添加双重token
+        if include_token and self.session_token:
+            # 确保data存在
+            if "data" not in response:
+                response["data"] = {}
+            # 添加data中的token
+            response["data"]["token"] = self.session_token
+            # 添加顶层token
             response["token"] = self.session_token
 
         # 修改发送格式，每条数据后加上\n作为结束标识
@@ -143,11 +153,15 @@ class ClientHandler:
 
         self.user_info = user_data
         self.session_token = self.generate_session_token()
-        self.send_response(
-            200,
-            "登陆成功",
-            {"permission": user_data["permission"], "token": self.session_token},
-        )
+
+        # 构建符合文档的响应结构
+        response_data = {
+            "permission": user_data["permission"],
+            "token": self.session_token,
+        }
+
+        # 发送响应并指定包含token
+        self.send_response(200, "登陆成功", data=response_data, include_token=True)
 
     def handle_register(self, request):
         """处理注册请求"""
@@ -191,7 +205,7 @@ class ClientHandler:
 
         try:
             conn = self.student_manager.get_connection()
-            cursor = conn.cursor()
+            cursor = conn.cursor(dictionary=True)
 
             query = """
             SELECT student_id, name, gender, score1, score2, score3,

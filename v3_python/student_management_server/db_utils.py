@@ -173,13 +173,23 @@ class AccountManager(BaseDBManager):
 
         try:
             conn = self.get_connection()
-            cursor = conn.cursor()
+            cursor = conn.cursor(dictionary=True)
 
-            query = "SELECT username, permission created_at FROM accounts"
+            query = "SELECT username, permission, created_at FROM accounts"
             cursor.execute(query)
             accounts = cursor.fetchall()
 
-            return True, "查询成功", accounts
+            # 格式化时间字段
+            formatted_accounts = []
+            for account in accounts:
+                # 将 datetime 对象转换为字符串
+                if account.get("created_at"):
+                    account["created_at"] = account["created_at"].strftime(
+                        "%Y-%m-%d %H:%M:%S"
+                    )
+                formatted_accounts.append(account)
+
+            return True, "查询成功", formatted_accounts
 
         except mysql.connector.Error as err:
             return False, f"数据库错误: {err}", None
@@ -269,7 +279,11 @@ class StudentManager(BaseDBManager):
             cursor.execute(query)
             students = cursor.fetchall()
 
-            return True, "查询成功", students
+            # 将元组列表转换为字典列表
+            columns = [col[0] for col in cursor.description]
+            students_dict = [dict(zip(columns, row)) for row in students]
+
+            return True, "查询成功", students_dict
 
         except mysql.connector.Error as err:
             return False, f"数据库错误: {err}", None
@@ -296,9 +310,16 @@ class StudentManager(BaseDBManager):
             FROM scores
             """
             cursor.execute(query)
-            stats = cursor.fetchall()
+            stats = cursor.fetchone()
 
-            return True, "统计成功", stats
+            # 将结果转换为符合接口文档的字典格式
+            result = {
+                "score1": {"avg": stats[0], "max": stats[1]},
+                "score2": {"avg": stats[2], "max": stats[3]},
+                "score3": {"avg": stats[4], "max": stats[5]},
+            }
+
+            return True, "统计成功", result
 
         except mysql.connector.Error as err:
             return False, f"数据库错误: {err}", None
