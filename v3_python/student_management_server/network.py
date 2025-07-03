@@ -281,7 +281,7 @@ class ClientHandler:
 
             insert_query = """
             INSERT INTO scores (student_id, name, gender, score1, score2, score3) 
-            VALUES (%s %s %s %s %s %s)
+            VALUES (%s, %s, %s, %s, %s, %s)
             """
             cursor.execute(
                 insert_query,
