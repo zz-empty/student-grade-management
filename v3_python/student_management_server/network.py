@@ -123,7 +123,9 @@ class ClientHandler:
         if self.session_token:
             response["token"] = self.session_token
 
-        self.client_socket.sendall(json.dumps(response).encode("utf-8"))
+        # 修改发送格式，每条数据后加上\n作为结束标识
+        response_json = json.dumps(response) + "\n"
+        self.client_socket.sendall(response_json.encode("utf-8"))
 
     def handle_login(self, request):
         username = request.get("username")
