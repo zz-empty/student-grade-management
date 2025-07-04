@@ -231,7 +231,7 @@ class AccountManager(BaseDBManager):
             if conn and conn.is_connected():
                 conn.close()
 
-    def delete_accout(self, username):
+    def delete_account(self, username):
         """删除用户（仅限管理员使用）"""
         conn = None
         cursor = None
@@ -244,7 +244,7 @@ class AccountManager(BaseDBManager):
             cursor.execute(delete_query, (username,))
             conn.commit()
 
-            if cursor.rowconunt == 0:
+            if cursor.rowcount == 0:
                 return False, "用户不存在"
 
             return True, "账户删除成功"
