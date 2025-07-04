@@ -1,0 +1,15 @@
+{
+  "server_port": 8888,
+  "log_file": "server_log.log",
+  "session_timeout": 1800,
+  "log_max_bytes": 1048576,
+  "log_backup_count": 3,
+  "database": {
+    "host": "mysql",
+    "port": 3306,
+    "user": "v3mysql_user",
+    "password": "v3mysql_user_pwd",
+    "database": "student_grade_db",
+    "pool_size": 5
+  }
+}
