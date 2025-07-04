@@ -92,7 +92,7 @@ class StudentManagementCLI:
 
             if self.permission == "admin":
                 options.append("5. 学生管理")
-                options.append("5. 账户管理")
+                options.append("6. 账户管理")
 
             options.append("0. 退出系统")
 
@@ -108,6 +108,16 @@ class StudentManagementCLI:
                 return False
             elif choice == "1":
                 self.query_all_students()
+            elif choice == "2":
+                self.query_student_by_id()
+            elif choice == "3":
+                self.show_statistic()
+            elif choice == "4":
+                self.change_password()
+            elif choice == "5" and self.permission == "admin":
+                self.student_management_menu()
+            elif choice == "6" and self.permission == "admin":
+                self.account_management_menu()
 
     def query_all_students(self):
         """查询所有学生"""
@@ -201,7 +211,15 @@ class StudentManagementCLI:
 
         if isinstance(data, dict):
             for subject, scores in data.items():
-                table.add_row(subject, f"{scores['avg']:.1f}", f"{scores['max']:.f}")
+                # 安全处理整数和浮点数
+                try:
+                    avg_value = float(scores["avg"])
+                    max_value = float(scores["max"])
+                except (TypeError, ValueError):
+                    avg_value = 0.0
+                    max_value = 0.0
+
+                table.add_row(subject, f"{avg_value:.1f}", f"{max_value:.1f}")
 
         self.console.print(table)
         Prompt.ask("按回车键返回主菜单")

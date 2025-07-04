@@ -63,7 +63,7 @@ if __name__ == "__main__":
 
     # 创建认证管理器并登录
     auth = AuthManager(client)
-    success, message, permission = auth.login("test_user99", "password999")
+    success, message, permission = auth.login("admin", "admin123")
     if not success:
         print(f"登录失败: {message}")
         client.close()
